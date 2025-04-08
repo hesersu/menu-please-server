@@ -2,6 +2,7 @@ const router = require("express").Router();
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/User.model");
+const { isAuthenticated } = require("../middlewares/jwt.middleware");
 
 // Create a route to make a user with an
 router.post("/signup", async (req, res) => {
@@ -46,18 +47,22 @@ router.post("/login", async (req, res) => {
           algorithm: "HS256",
           expiresIn: "24h",
         });
-        res
-          .status(200)
-          .json({
-            message: "Password Matched and you are Logged in",
-            authToken,
-          });
+        res.status(200).json({
+          message: "Password Matched and you are Logged in",
+          authToken,
+        });
       }
     }
   } catch {
     console.log(err);
     res.status(500).json(err);
   }
+});
+
+// Verify route to check if token is present and valid
+router.get("/verify", isAuthenticated, (req, res, next) => {
+  console.log("Token Valid!");
+  res.status(200).json({ message: "Token Valid", payload: req.payload });
 });
 
 module.exports = router;
