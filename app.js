@@ -22,9 +22,13 @@ app.use("/api", indexRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
-// Pizza Routes here
-const pizzaRoutes = require("./routes/pizza.routes");
-app.use("/pizza", pizzaRoutes);
+// Menus Routes here
+const menuRoutes = require("./routes/menus.routes");
+app.use("/menus", menuRoutes);
+
+// Restaurant Routes here
+const restaurantRoutes = require("./routes/restaurants.routes");
+app.use("/restaurants", restaurantRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
