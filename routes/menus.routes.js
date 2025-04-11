@@ -1,16 +1,34 @@
 const router = require("express").Router();
 const MenuModel = require("../models/Menus.model");
+const uploader = require("../middlewares/cloudinary.middleware")
 
 // Create menu
 
-router.post("/create", async (req, res) => {
+router.post("/create", uploader.single("menuImg"), async (req, res) => {
+
+//   if(!req.file){
+//   try {
+//     const ResponseFromDB = await MenuModel.create(req.body);
+//     res.status(201).json(ResponseFromDB);
+//   } catch {
+//     console.log(err);
+//     res.status(500).json({ errorMessage: "Trouble creating menu" });
+//   }
+// } else {
   try {
-    const ResponseFromDB = await MenuModel.create(req.body);
+    const menuToCreate = {
+      ...req.body, 
+      menuImg: req.file.path
+    }
+    console.log(menuToCreate)
+    const ResponseFromDB = await MenuModel.create(menuToCreate);
     res.status(201).json(ResponseFromDB);
   } catch {
     console.log(err);
     res.status(500).json({ errorMessage: "Trouble creating menu" });
-  }
+  
+}
+
 });
 
 // Get all menus
