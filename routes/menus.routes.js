@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const MenuModel = require("../models/Menus.model");
 const uploader = require("../middlewares/cloudinary.middleware")
+const mongoose = require("mongoose")
 
 // Create menu
 
@@ -39,7 +40,20 @@ router.get("/all-menus", async (_, res) => {
     res.status(200).json({ allMenus: menuResponse });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ errorMessage: "Trouble getting pizzas" });
+    res.status(500).json({ errorMessage: "Trouble getting menus" });
+  }
+});
+
+//Get all menus for one user
+router.get("/all-menus-one-user", async (req, res) => {
+  const { ownerId } = req.query
+  console.log("this is the userId", ownerId)
+  try {
+    const menuResponse = await MenuModel.find({owner_id: new mongoose.Types.ObjectId(ownerId)});
+    res.status(200).json({ allMenusForOneUser: menuResponse });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ errorMessage: "Trouble getting menus" });
   }
 });
 
