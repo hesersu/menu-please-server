@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
     // Finding a user
     const foundUser = await UserModel.findOne({ email: req.body.email });
     if (!foundUser) {
-      res.status(400).json({ errorMessage: "E-mail not found" });
+      res.status(400).json({ errorMessage: "Invalid email or password. Please try again." });
     } else {
       // Compare passwords when found user
       const passwordFromFrontend = req.body.password;
@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
       );
       console.log("Match?", passwordsMatch);
       if (!passwordsMatch) {
-        res.status(400).json({ errorMessage: "Password did not match" });
+        res.status(400).json({ errorMessage: "Invalid email or password. Please try again." });
       } else {
         // Add non secret data
         const data = { _id: foundUser.id, username: foundUser.username };
@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
           expiresIn: "24h",
         });
         res.status(200).json({
-          message: "Password Matched and you are Logged in",
+          message: "You are logged in!",
           authToken,
         });
       }
