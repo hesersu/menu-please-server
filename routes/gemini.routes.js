@@ -25,10 +25,7 @@ router.post("/translate-menu-from-uri", express.json(), async (req, res) => {
     );
 
     // Return the translation result
-    res.status(200).json({
-      message: "Menu translated successfully",
-      translation: JSON.parse(translationResult),
-    });
+    res.status(200).json(translationResult);
   } catch (error) {
     console.error("Error translating menu:", error);
     res.status(500).json({
@@ -54,10 +51,7 @@ router.post("/create-order", express.json(), async (req, res) => {
     const orderResult = await createOrderMenu(order, language);
 
     // Return the order result
-    res.status(200).json({
-      message: "Order created successfully",
-      order: JSON.parse(orderResult),
-    });
+    res.status(200).send(orderResult);
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).json({
@@ -168,8 +162,17 @@ async function createOrderMenu(order, language) {
                 description:
                   "Restaurant order pronunciation so that a customer can communicate to the waiter. Example: Nǐ hǎo, wǒ xiǎng diǎn liǎng fèn gōng bǎo jī dīng",
               },
+              orderTranslation: {
+                type: "string",
+                description:
+                  "Restaurant order translated in English, pay attention that the menu items are translated properly",
+              },
             },
-            required: ["orderOriginal", "orderPronunciation"],
+            required: [
+              "orderOriginal",
+              "orderPronunciation",
+              "orderTranslation",
+            ],
           },
         },
       },
