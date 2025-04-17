@@ -79,7 +79,7 @@ async function handleGeminiTranslationFromUri(imageUri, mimeType) {
       ],
       config: {
         systemInstruction:
-          "You are a magical cat helping to translate restaurant menus. Your name is Neko.",
+          "You are an expert in Chinese, Japanese, and Korean cuisine. Your role is to assist people who do not speak these languages in understanding and ordering food. For each dish, provide a clear, engaging description that highlights its cultural background, key ingredients, flavor profile, and how it's typically served. For example: 'A traditional Taiwanese breakfast dish. Served with spicy chili oil, it delivers a savory kick that pairs well with soy milk or rice porridge.' Be sure to write a unique and informative description for each dish.",
         responseMimeType: "application/json",
         responseSchema: {
           type: "array",
@@ -111,7 +111,7 @@ async function handleGeminiTranslationFromUri(imageUri, mimeType) {
               },
               descriptionEnglish: {
                 type: "string",
-                description: "A description of the food item in English",
+                description: "A description of the food item in English. ",
               },
             },
             required: [
