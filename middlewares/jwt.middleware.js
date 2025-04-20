@@ -14,7 +14,7 @@ function isAuthenticated(req, res, next) {
     } else {
       res.status(400).json({ errorMessage: "Token not present" });
     }
-  } catch {
+  } catch (err) {
     res.status(500).json({ errorMessage: "Token invalid" });
   }
 }

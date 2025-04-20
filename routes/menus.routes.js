@@ -23,7 +23,7 @@ router.post("/create", uploader.single("menuImg"), async (req, res) => {
     console.log(menuToCreate);
     const ResponseFromDB = await MenuModel.create(menuToCreate);
     res.status(201).json(ResponseFromDB);
-  } catch {
+  } catch (err) {
     console.log(err);
     res.status(500).json({ errorMessage: "Trouble creating menu" });
   }

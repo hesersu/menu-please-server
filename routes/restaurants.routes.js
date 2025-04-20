@@ -7,7 +7,7 @@ router.post("/create", async (req, res) => {
   try {
     const ResponseFromDB = await RestaurantModel.create(req.body);
     res.status(201).json(ResponseFromDB);
-  } catch {
+  } catch (err) {
     console.log(err);
     res.status(500).json({ errorMessage: "Trouble creating restaurant" });
   }

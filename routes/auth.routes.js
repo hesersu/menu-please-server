@@ -16,7 +16,7 @@ router.post("/signup", async (req, res) => {
     const newUser = await UserModel.create(hashedUser);
     console.log("user created successfully", newUser);
     res.status(201).json({ message: "User successfully create in DB" });
-  } catch {
+  } catch (err) {
     console.log(err);
     res.status(500).json(err);
   }
@@ -41,11 +41,9 @@ router.post("/login", async (req, res) => {
       );
       console.log("Match?", passwordsMatch);
       if (!passwordsMatch) {
-        res
-          .status(400)
-          .json({
-            errorMessage: "Invalid email or password. Please try again.",
-          });
+        res.status(400).json({
+          errorMessage: "Invalid email or password. Please try again.",
+        });
       } else {
         // Add non secret data
         const data = { _id: foundUser.id, username: foundUser.username };
