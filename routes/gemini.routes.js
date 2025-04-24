@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
 const {
   GoogleGenAI,
   createUserContent,
@@ -35,6 +36,31 @@ router.post("/translate-menu-from-uri", express.json(), async (req, res) => {
   }
 });
 
+//Route to upload audio file and transcribe audio and translate the transcription
+router.post("/translate-audio-from-uri", express.json(), async (req, res) => {
+  try {
+    const { audioUri, mimeType, targetLanguage } = req.body;
+
+    if (!audioUri || !mimeType) {
+      return res.status(400).json({
+        error: "Missing required parameters",
+        details: "Both audioUri and mimeType are required",
+      });
+    }
+
+    // Call the translation function with the URI
+    const translationResult = await handleGeminiTranslationFromAudioUri(audioUri, mimeType, targetLanguage);
+
+    res.status(200).json({ translationResult });
+  } catch (error) {
+    console.error("Error transcribing audio:", error);
+    res.status(500).json({
+      error: "Error transcribing audio",
+      details: error.message,
+    });
+  }
+});
+
 // Route to create waiter-friendly order
 router.post("/create-order", express.json(), async (req, res) => {
   try {
@@ -46,6 +72,31 @@ router.post("/create-order", express.json(), async (req, res) => {
         details: "Both order and language are required",
       });
     }
+
+  // Route to create waiter-friendly order
+router.post("/create-order", express.json(), async (req, res) => {
+  try {
+    const { order, language } = req.body;
+
+    if (!order || !language) {
+      return res.status(400).json({
+        error: "Missing required parameters",
+        details: "Both order and language are required",
+      });
+    }
+
+    const orderResult = await createOrderMenu(order, language);
+
+    res.status(200).send(orderResult);
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({
+      error: "Error creating order",
+      details: error.message,
+    });
+  }
+});
+
 
     // Call the order creation function
     const orderResult = await createOrderMenu(order, language);
@@ -135,6 +186,55 @@ async function handleGeminiTranslationFromUri(imageUri, mimeType) {
   }
 }
 
+// Translation function using a previously uploaded audioUri
+async function handleGeminiTranslationFromAudioUri(AudioUri, mimeType, targetLanguage) {
+  try {
+    console.log("targetLanguage:", targetLanguage)
+    // Generate content using the already uploaded image URI
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [
+        createUserContent([
+          createPartFromUri(AudioUri, mimeType, targetLanguage),
+          "Help me transscribe and translate this Audio file",
+        ]),
+      ],
+      config: {
+        systemInstruction:
+          `Please transcribe the uploaded audio file and translate it to the target language ${targetLanguage}. You should return both the transcription in original language and the translation`,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              audioTranscription: {
+                type: "string",
+                description: "Transcription of the audio file in original language",
+              },
+              audioTranslation: {
+                type: "string",
+                description:
+                  `Translation of the audio file in target language ${targetLanguage}`,
+              },
+            },
+            required: [
+              "audioTranscription",
+              "audioTranslation",
+            ],
+          },
+        },
+      },
+    });
+
+    console.log(response.text);
+    return response.text;
+  } catch (error) {
+    console.error("Error in handleGeminiTranslationFromUri:", error);
+    throw error;
+  }
+}
+
 // Implementation of createOrderMenu function (unchanged)
 async function createOrderMenu(order, language) {
   try {
@@ -187,5 +287,6 @@ async function createOrderMenu(order, language) {
   }
 }
 
+// 
 // Export the router
 module.exports = router;
